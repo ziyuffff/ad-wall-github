@@ -1,26 +1,32 @@
 const express = require('express');
-const cors = require('cors');
 const fs = require('fs-extra');
 const multer = require('multer');
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// 【核心修复】直接指定前端域名（去掉环境变量判断，避免Vercel环境变量问题）
-// 确保前端域名完全正确（包含https）
+// 前端部署的公网域名（必须和实际一致）
 const FRONTEND_DOMAIN = 'https://ad-wall-front.vercel.app';
 
-// 配置CORS：强制返回Access-Control-Allow-Origin头
-app.use(cors({
-  origin: FRONTEND_DOMAIN, // 只允许你的前端域名
-  credentials: true,
-  // 显式配置允许的请求头（避免Vercel默认限制）
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Content-Type']
-}));
+// 【核心：手动设置跨域响应头，完全绕开cors模块】
+app.use((req, res, next) => {
+  // 允许前端域名的请求
+  res.setHeader('Access-Control-Allow-Origin', FRONTEND_DOMAIN);
+  // 允许携带凭证（Cookie/Token）
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  // 允许的请求方法
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  // 允许的请求头
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  // 处理OPTIONS预请求（浏览器跨域会先发这个请求）
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
 
-// 【关键】在CORS之后解析请求体（中间件顺序不能错）
+// 解析JSON请求体
 app.use(express.json());
 
 // 配置文件存储路径
@@ -164,5 +170,5 @@ app.use('/uploads', express.static(uploadsDir));
 // 启动服务器
 app.listen(PORT, () => {
   console.log(`服务器运行在 https://ad-wall-back.vercel.app (端口: ${PORT})`);
-  console.log(`允许跨域的前端域名：${FRONTEND_DOMAIN}`); // 部署后验证域名是否正确
+  console.log(`允许跨域的前端域名：${FRONTEND_DOMAIN}`);
 });
