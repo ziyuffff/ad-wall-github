@@ -7,15 +7,20 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 配置CORS：更灵活的跨域处理（兼容生产环境）
+// 【核心修复】直接指定前端域名（去掉环境变量判断，避免Vercel环境变量问题）
+// 确保前端域名完全正确（包含https）
+const FRONTEND_DOMAIN = 'https://ad-wall-front.vercel.app';
+
+// 配置CORS：强制返回Access-Control-Allow-Origin头
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? 'https://ad-wall-front.vercel.app' 
-    : 'http://localhost:3000', // 开发环境允许本地前端
-  credentials: true
+  origin: FRONTEND_DOMAIN, // 只允许你的前端域名
+  credentials: true,
+  // 显式配置允许的请求头（避免Vercel默认限制）
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Type']
 }));
 
-// 解析JSON请求体
+// 【关键】在CORS之后解析请求体（中间件顺序不能错）
 app.use(express.json());
 
 // 配置文件存储路径
@@ -159,4 +164,5 @@ app.use('/uploads', express.static(uploadsDir));
 // 启动服务器
 app.listen(PORT, () => {
   console.log(`服务器运行在 https://ad-wall-back.vercel.app (端口: ${PORT})`);
+  console.log(`允许跨域的前端域名：${FRONTEND_DOMAIN}`); // 部署后验证域名是否正确
 });
