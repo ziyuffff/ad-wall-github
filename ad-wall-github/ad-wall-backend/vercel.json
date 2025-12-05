@@ -2,16 +2,11 @@
   "version": 2,
   "builds": [
     {
-      "src": "/api/(.*)", "dest": "app.js",
-      "use": "@vercel/node",
-      "config": {
-        "installCommand": "npm install",
-        "startCommand": "node app.js"
-      }
+      "src": "app.js", // 必须填后端入口文件路径（不是路由）
+      "use": "@vercel/node" // 告诉Vercel这是Node.js文件
     }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "app.js" }
+    { "src": "/api/(.*)", "dest": "app.js" } // 仅把/api开头的请求转发到app.js
   ]
-
 }
