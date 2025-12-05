@@ -5,13 +5,12 @@ const multer = require('multer');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+// 【关键1：删除Serverless模式下无效的PORT和listen相关代码】
+// 原代码中 const PORT = process.env.PORT || 3000; 已删除
 
-// 配置CORS：更灵活的跨域处理（兼容生产环境）
+// 【关键2：修改CORS配置，直接指定前端域名（避免NODE_ENV未定义）】
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? 'https://ad-wall-front.vercel.app' 
-    : 'http://localhost:3000', // 开发环境允许本地前端
+  origin: 'https://ad-wall-front.vercel.app', // 固定前端域名，兼容Serverless
   credentials: true
 }));
 
@@ -156,7 +155,6 @@ app.post('/api/upload/video', upload.array('videos', 3), (req, res) => {
 // 静态文件服务
 app.use('/uploads', express.static(uploadsDir));
 
-// 启动服务器
-app.listen(PORT, () => {
-  console.log(`服务器运行在 https://ad-wall-back.vercel.app (端口: ${PORT})`);
-});
+// 【关键3：删除原有的app.listen启动代码，导出Express实例供Vercel调用】
+// 原代码中 app.listen(...) 已删除
+module.exports = app;
