@@ -15,4 +15,7 @@
     "fs-extra": "^11.3.2",
     "multer": "^2.0.2"
   }
+  "scripts": {
+    "start": "node app.js" // 新增这行：告诉Vercel用node启动app.js
+  }
 }
