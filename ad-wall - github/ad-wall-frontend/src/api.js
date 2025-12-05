@@ -1,8 +1,11 @@
 import axios from 'axios';
 
+// 替换为后端实际部署的公网域名（去掉localhost，使用部署后的地址）
 const api = axios.create({
-  baseURL: 'http://ad-wall-front.vercel.app',
-  timeout: 5000
+  baseURL: 'https://ad-wall-back.vercel.app/api',
+  timeout: 5000,
+  // 允许跨域请求携带凭证（如果后端开启了credentials）
+  withCredentials: true
 });
 
 // 广告相关接口
@@ -25,6 +28,5 @@ export const uploadApi = {
     headers: { 'Content-Type': 'multipart/form-data' }
   })
 };
-
 
 export default { adApi, formApi, uploadApi };
