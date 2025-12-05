@@ -5,10 +5,15 @@ const multer = require('multer');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+// 适配Vercel的端口（不能硬编码3000，Vercel会自动分配端口）
+const PORT = process.env.PORT || 3000;
 
-// 配置CORS
-app.use(cors());
+// 配置CORS：仅允许前端域名访问，解决跨域问题
+app.use(cors({
+  origin: 'https://ad-wall-front.vercel.app', // 你的前端公网域名
+  credentials: true // 允许传递Cookie/Token（如需鉴权则必须开启）
+}));
+
 // 解析JSON请求体
 app.use(express.json());
 
@@ -135,11 +140,11 @@ app.patch('/api/ads/:id/click', (req, res) => {
   }
 });
 
-// 视频上传接口
+// 视频上传接口：修复URL为后端公网域名（不再用localhost）
 app.post('/api/upload/video', upload.array('videos', 3), (req, res) => {
   try {
     const videoUrls = req.files.map(file => 
-      `http://localhost:3000/uploads/${file.filename}`
+      `https://ad-wall-back.vercel.app/uploads/${file.filename}` // 后端公网域名
     );
     res.json({ success: true, data: videoUrls });
   } catch (error) {
@@ -147,10 +152,10 @@ app.post('/api/upload/video', upload.array('videos', 3), (req, res) => {
   }
 });
 
-// 静态文件服务
+// 静态文件服务：允许前端访问上传的视频文件
 app.use('/uploads', express.static(uploadsDir));
 
 // 启动服务器
 app.listen(PORT, () => {
-  console.log(`服务器运行在 http://localhost:${PORT}`);
+  console.log(`服务器运行在 https://ad-wall-back.vercel.app (端口: ${PORT})`);
 });
