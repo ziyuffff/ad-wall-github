@@ -5,13 +5,14 @@ const multer = require('multer');
 const path = require('path');
 
 const app = express();
-// 适配Vercel的端口（不能硬编码3000，Vercel会自动分配端口）
 const PORT = process.env.PORT || 3000;
 
-// 配置CORS：仅允许前端域名访问，解决跨域问题
+// 配置CORS：更灵活的跨域处理（兼容生产环境）
 app.use(cors({
-  origin: 'https://ad-wall-front.vercel.app', // 你的前端公网域名
-  credentials: true // 允许传递Cookie/Token（如需鉴权则必须开启）
+  origin: process.env.NODE_ENV === 'production' 
+    ? 'https://ad-wall-front.vercel.app' 
+    : 'http://localhost:3000', // 开发环境允许本地前端
+  credentials: true
 }));
 
 // 解析JSON请求体
@@ -39,20 +40,20 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// 5.1 读取广告数据（工具函数）
+// 读取广告数据（工具函数）
 const getAds = () => {
   if (fs.existsSync(adsPath)) {
     return JSON.parse(fs.readFileSync(adsPath, 'utf8'));
   }
-  return []; // 没有数据时返回空数组
+  return [];
 };
 
-// 5.2 保存广告数据（工具函数）
+// 保存广告数据（工具函数）
 const saveAds = (ads) => {
   fs.writeFileSync(adsPath, JSON.stringify(ads, null, 2), 'utf8');
 };
 
-// 新增：获取表单配置
+// 获取表单配置
 app.get('/api/form-config', (req, res) => {
   try {
     if (fs.existsSync(formConfigPath)) {
@@ -140,11 +141,11 @@ app.patch('/api/ads/:id/click', (req, res) => {
   }
 });
 
-// 视频上传接口：修复URL为后端公网域名（不再用localhost）
+// 视频上传接口
 app.post('/api/upload/video', upload.array('videos', 3), (req, res) => {
   try {
     const videoUrls = req.files.map(file => 
-      `https://ad-wall-back.vercel.app/uploads/${file.filename}` // 后端公网域名
+      `https://ad-wall-back.vercel.app/uploads/${file.filename}`
     );
     res.json({ success: true, data: videoUrls });
   } catch (error) {
@@ -152,7 +153,7 @@ app.post('/api/upload/video', upload.array('videos', 3), (req, res) => {
   }
 });
 
-// 静态文件服务：允许前端访问上传的视频文件
+// 静态文件服务
 app.use('/uploads', express.static(uploadsDir));
 
 // 启动服务器
