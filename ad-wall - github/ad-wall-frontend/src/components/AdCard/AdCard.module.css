@@ -1,0 +1,144 @@
+.card {
+  background: rgba(255, 255, 255, 0.9); /* 卡片默认半透明白色，适配渐变背景 */
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.3s ease; /* 增加过渡动画，让hover更丝滑 */
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column; /* 垂直排列子元素 */
+  min-height: 0; /* 解决内容溢出问题 */
+}
+
+/* 修改hover状态：背景改为淡紫色，加深阴影，轻微上浮 */
+.card:hover {
+  background: rgba(240, 230, 250, 0.95); /* 淡紫色（#f0e6fa）半透明 */
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  transform: translateY(-3px); /* 轻微上浮，增强立体感 */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+}
+
+.title {
+  font-weight: bold;
+  font-size: 18px;
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #333; /* 标题文字颜色 */
+}
+
+.operateBtn {
+  font-size: 14px;
+  background-color: rgba(68, 8, 78, 0.8); /* 按钮半透明淡紫 */
+  color: #ffffff; /* 按钮文字改为深紫 */
+  border-radius: 4px;
+  padding: 2px 8px;
+  transition: background-color 0.3s ease;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+.operateBtn:hover {
+  background-color: rgba(163, 62, 62, 0.8);
+}
+
+.operateMenu {
+  position: absolute;
+  right: 4px;
+  top: 28px;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  z-index: 10;
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  padding: 2px;
+}
+
+.operateMenuItem {
+  padding: 6px 12px;
+  font-size: 12px;
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.edit {
+  color: #2196f3;
+}
+
+.copy {
+  color: #4caf50;
+}
+
+.delete {
+  color: #f44336;
+}
+
+.operateMenuItem:hover {
+  background-color: #f5f5f5;
+}
+
+.author {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.content {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 12px;
+  /* 同时使用私有前缀+标准属性，解决警告+提升兼容性 */
+  display: -webkit-box;
+  display: box;
+  /* autoprefixer: ignore next */
+  -webkit-box-orient: vertical;
+  /* autoprefixer: ignore next */
+  box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  word-break: break-all;
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  /* 新增：自动顶开上方空间，固定在底部 */
+  margin-top: auto;
+  /* 可根据需要调整与上方内容的间距 */
+  padding-top: 12px;
+}
+
+.statsLeft {
+  display: flex;
+  align-items: center;
+}
+
+.statItem {
+  color: #646464;
+  margin-right: 8px;
+}
+
+.pricing {
+  color: #9c27b0;
+  font-weight: 500;
+}
