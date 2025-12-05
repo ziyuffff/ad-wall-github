@@ -1,9 +1,10 @@
 {
   "name": "ad-wall-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "",
@@ -15,7 +16,4 @@
     "fs-extra": "^11.3.2",
     "multer": "^2.0.2"
   }
-  "scripts": {
-    "start": "node app.js" 
-}
 }
