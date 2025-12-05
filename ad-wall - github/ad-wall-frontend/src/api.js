@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: 'http://ad-wall-front.vercel.app',
   timeout: 5000
 });
 
@@ -25,5 +25,6 @@ export const uploadApi = {
     headers: { 'Content-Type': 'multipart/form-data' }
   })
 };
+
 
 export default { adApi, formApi, uploadApi };
