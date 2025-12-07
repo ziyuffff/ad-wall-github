@@ -5,15 +5,10 @@ const multer = require('multer');
 const path = require('path');
 
 const app = express();
-// 【关键1：删除Serverless模式下无效的PORT和listen相关代码】
-// 原代码中 const PORT = process.env.PORT || 3000; 已删除
+const PORT = 3000;
 
-// 【关键2：修改CORS配置，直接指定前端域名（避免NODE_ENV未定义）】
-app.use(cors({
-  origin: 'https://ad-wall-front.vercel.app', // 固定前端域名，兼容Serverless
-  credentials: true
-}));
-
+// 配置CORS
+app.use(cors());
 // 解析JSON请求体
 app.use(express.json());
 
@@ -39,20 +34,20 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// 读取广告数据（工具函数）
+// 5.1 读取广告数据（工具函数）
 const getAds = () => {
   if (fs.existsSync(adsPath)) {
     return JSON.parse(fs.readFileSync(adsPath, 'utf8'));
   }
-  return [];
+  return []; // 没有数据时返回空数组
 };
 
-// 保存广告数据（工具函数）
+// 5.2 保存广告数据（工具函数）
 const saveAds = (ads) => {
   fs.writeFileSync(adsPath, JSON.stringify(ads, null, 2), 'utf8');
 };
 
-// 获取表单配置
+// 新增：获取表单配置
 app.get('/api/form-config', (req, res) => {
   try {
     if (fs.existsSync(formConfigPath)) {
@@ -144,7 +139,7 @@ app.patch('/api/ads/:id/click', (req, res) => {
 app.post('/api/upload/video', upload.array('videos', 3), (req, res) => {
   try {
     const videoUrls = req.files.map(file => 
-      `https://ad-wall-back.vercel.app/uploads/${file.filename}`
+      `http://localhost:3000/uploads/${file.filename}`
     );
     res.json({ success: true, data: videoUrls });
   } catch (error) {
@@ -155,6 +150,7 @@ app.post('/api/upload/video', upload.array('videos', 3), (req, res) => {
 // 静态文件服务
 app.use('/uploads', express.static(uploadsDir));
 
-// 【关键3：删除原有的app.listen启动代码，导出Express实例供Vercel调用】
-// 原代码中 app.listen(...) 已删除
-module.exports = app;
+// 启动服务器
+app.listen(PORT, () => {
+  console.log(`服务器运行在 http://localhost:${PORT}`);
+});
